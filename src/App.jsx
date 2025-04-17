@@ -12,7 +12,15 @@ import {
 } from "chart.js";
 import "animate.css";
 
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 function App() {
   const [exercise, setExercise] = useState("");
@@ -23,8 +31,8 @@ function App() {
   const [goals, setGoals] = useState({});
   const [currentGoal, setCurrentGoal] = useState("");
   const [darkMode, setDarkMode] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
-  const [errorKey, setErrorKey] = useState(0); // 애니메이션 리셋용 key
+  const [errors, setErrors] = useState({});
+  const [errorKey, setErrorKey] = useState(0);
 
   useEffect(() => {
     const savedHistory = localStorage.getItem("rmHistory");
@@ -50,33 +58,40 @@ function App() {
   }, [exercise, goals]);
 
   const handleCalculate = () => {
-    if (!exercise) {
-      setErrorMessage("운동할 종목을 선택하세요.");
-      setErrorKey(prev => prev + 1); // 애니메이션 트리거
+    const newErrors = {};
+    if (!exercise) newErrors.exercise = "운동할 종목을 선택하세요.";
+    if (!weight || !reps || parseFloat(weight) <= 0 || parseInt(reps) <= 0) {
+      newErrors.inputs = "중량과 반복 횟수를 모두 올바르게 입력해주세요.";
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      setErrorKey(prev => prev + 1);
       return;
     }
-    setErrorMessage("");
+
+    setErrors({});
 
     const w = parseFloat(weight);
     const r = parseInt(reps);
-    if (!isNaN(w) && !isNaN(r) && r > 0) {
-      const estimated1RM = w * (1 + r / 30);
-      if (estimated1RM > 1000) {
-        alert("1RM이 너무 높습니다. 다시 확인해주세요.");
-        return;
-      }
-      const newResult = parseFloat(estimated1RM.toFixed(1));
-      setResult(newResult);
+    const estimated1RM = w * (1 + r / 30);
 
-      const date = new Date().toISOString().split("T")[0];
-      const newRecord = { exercise, weight: w, reps: r, rm: newResult, date };
-
-      const updatedHistory = [newRecord, ...history].sort(
-        (a, b) => new Date(b.date) - new Date(a.date)
-      );
-      setHistory(updatedHistory);
-      localStorage.setItem("rmHistory", JSON.stringify(updatedHistory));
+    if (estimated1RM > 1000) {
+      alert("1RM이 너무 높습니다. 다시 확인해주세요.");
+      return;
     }
+
+    const newResult = parseFloat(estimated1RM.toFixed(1));
+    setResult(newResult);
+
+    const date = new Date().toISOString().split("T")[0];
+    const newRecord = { exercise, weight: w, reps: r, rm: newResult, date };
+
+    const updatedHistory = [newRecord, ...history].sort(
+      (a, b) => new Date(b.date) - new Date(a.date)
+    );
+    setHistory(updatedHistory);
+    localStorage.setItem("rmHistory", JSON.stringify(updatedHistory));
   };
 
   const handleDelete = (index) => {
@@ -107,7 +122,6 @@ function App() {
     }
   }, [latestRM, goalRM]);
 
-  // 최근 기록이 오른쪽에 오도록 reversedData를 생성
   const reversedFiltered = [...filtered].reverse();
 
   const chartData = {
@@ -140,10 +154,9 @@ function App() {
           <option value="오버헤드 프레스">오버헤드 프레스</option>
           <option value="바벨로우">바벨로우</option>
         </select>
-
-        {errorMessage && (
-          <div key={errorKey} className="text-red-500 text-sm animate__animated animate__headShake">
-            {errorMessage}
+        {errors.exercise && (
+          <div key={errorKey + "e"} className="text-red-500 text-sm animate__animated animate__headShake">
+            {errors.exercise}
           </div>
         )}
 
@@ -154,6 +167,7 @@ function App() {
           onChange={(e) => setWeight(e.target.value)}
           className={`w-full border p-2 rounded ${darkMode ? "bg-gray-700 text-white" : "bg-white text-black"}`}
         />
+
         <input
           type="number"
           placeholder="반복 횟수"
@@ -161,6 +175,12 @@ function App() {
           onChange={(e) => setReps(e.target.value)}
           className={`w-full border p-2 rounded ${darkMode ? "bg-gray-700 text-white" : "bg-white text-black"}`}
         />
+
+        {errors.inputs && (
+          <div key={errorKey + "i"} className="text-red-500 text-sm animate__animated animate__headShake">
+            {errors.inputs}
+          </div>
+        )}
 
         <button onClick={handleCalculate} className="w-full bg-blue-500 text-white p-2 rounded">
           1RM 계산
@@ -172,7 +192,6 @@ function App() {
           </div>
         )}
 
-        {/* 목표 설정 */}
         <div className="mt-6 border-t pt-4">
           <h2 className="font-semibold text-lg">🎯 목표 1RM 설정</h2>
           <input
@@ -187,7 +206,6 @@ function App() {
           </button>
         </div>
 
-        {/* 다크모드 버튼 */}
         <button
           onClick={() => setDarkMode(!darkMode)}
           className={`mt-4 w-full ${darkMode ? "bg-yellow-500" : "bg-gray-800"} text-white p-2 rounded`}
@@ -195,7 +213,6 @@ function App() {
           {darkMode ? "🌞 라이트 모드" : "🌙 다크 모드"}
         </button>
 
-        {/* 최근 기록 */}
         {filtered.length > 0 && (
           <div className="mt-6">
             <h2 className="text-lg font-semibold mb-2">📌 최근 기록</h2>
@@ -212,7 +229,6 @@ function App() {
           </div>
         )}
 
-        {/* 차트 */}
         {filtered.length > 1 && (
           <div className="mt-6">
             <h2 className="text-lg font-semibold mb-2">📈 1RM 추이</h2>

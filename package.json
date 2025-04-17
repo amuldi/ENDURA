@@ -6,7 +6,8 @@
     "prebuild": "chmod +x ./node_modules/.bin/vite",
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+     "test": "jest"
   },
   "dependencies": {
     "animate.css": "^4.1.1",
@@ -20,7 +21,10 @@
     "vite": "^6.3.1"
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.3.0",
     "autoprefixer": "^10.4.21",
+    "jest": "^27.5.1",
     "postcss": "^8.5.3",
     "tailwindcss": "^3.4.17"
   },
@@ -40,4 +44,6 @@
   "engines": {
     "node": "18.x"
   }
+ 
 }
+

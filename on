@@ -1,0 +1,24 @@
+warning: in the working copy of 'index.html', LF will be replaced by CRLF the next time Git touches it
+[1mdiff --git a/index.html b/index.html[m
+[1mindex 5a389c0..62f5874 100644[m
+[1m--- a/index.html[m
+[1m+++ b/index.html[m
+[36m@@ -10,4 +10,16 @@[m
+     <div id="root"></div>[m
+     <script type="module" src="/src/main.jsx"></script>[m
+   </body>[m
+[31m-</html>[m
+\ No newline at end of file[m
+[32m+[m[32m</html>[m
+[32m+[m
+[32m+[m[32m<head>[m
+[32m+[m[32m  <title>1RM 계산기 | 1rm Calculator 웹앱</title>[m
+[32m+[m[32m  <meta name="description" content="운동 기록을 관리하고 1RM을 자동 계산해주는  웹앱입니다. ">[m
+[32m+[m[32m  <meta name="keywords" content="1rm 계산기, 운동 웹앱, 벤치프레스, 스쿼트, 데드리프트, 1RM calculator, fitness app">[m
+[32m+[m[32m  <meta name="author" content="amuldi">[m
+[32m+[m[32m  <meta name="robots" content="index, follow">[m
+[32m+[m[32m  <meta property="og:title" content="1RM 계산기" />[m
+[32m+[m[32m  <meta property="og:description" content="운동 기록과 목표를 함께 관리하세요!" />[m
+[32m+[m[32m  <meta property="og:type" content="website" />[m
+[32m+[m[32m  <meta property="og:url" content="https://1rm-calculator-web.vercel.app" />[m
+[32m+[m[32m</head>[m

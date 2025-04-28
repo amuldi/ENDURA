@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useLayoutEffect } from "react";
 import { useSwipeable } from "react-swipeable";
 import OneRM from "./OneRM";
 import Zone2 from "./Zone2";
@@ -7,8 +7,7 @@ function App() {
   const [activeTab, setActiveTab] = useState("1rm");
   const [darkMode, setDarkMode] = useState(false);
 
-  // 다크모드 자동 감지 (배포 환경에서도 정상 작동하도록 수정)
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (typeof window !== "undefined") {
       const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
       setDarkMode(isDark);
@@ -36,7 +35,9 @@ function App() {
   return (
     <div
       {...handlers}
-      className={`min-h-screen ${darkMode ? "bg-[#121212] text-white" : "bg-[#FAFAFA] text-black"} px-4 py-6 transition-colors duration-300`}
+      className={`min-h-screen transition-colors duration-300 ${
+        darkMode ? "bg-[#121212] text-white" : "bg-[#FAFAFA] text-black"
+      } px-4 py-6`}
     >
       <div className="max-w-3xl mx-auto">
         <div className="flex justify-center gap-4 mb-6">

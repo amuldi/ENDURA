@@ -7,17 +7,19 @@ function App() {
   const [activeTab, setActiveTab] = useState("1rm");
   const [darkMode, setDarkMode] = useState(false);
 
-  // 다크모드 자동 감지
+  // 다크모드 자동 감지 (배포 환경에서도 정상 작동하도록 수정)
   useEffect(() => {
-    const isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-    setDarkMode(isDark);
+    if (typeof window !== "undefined") {
+      const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      setDarkMode(isDark);
 
-    const listener = (e) => setDarkMode(e.matches);
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', listener);
+      const listener = (e) => setDarkMode(e.matches);
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', listener);
 
-    return () => {
-      window.matchMedia('(prefers-color-scheme: dark)').removeEventListener('change', listener);
-    };
+      return () => {
+        window.matchMedia('(prefers-color-scheme: dark)').removeEventListener('change', listener);
+      };
+    }
   }, []);
 
   const handlers = useSwipeable({

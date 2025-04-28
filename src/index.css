@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ✍️ 폰트 변경 */
 body {
-  font-family: 'Noto Sans KR', sans-serif;
+  font-family: 'Pretendard', 'DM Sans', sans-serif;
 }

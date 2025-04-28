@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://1rm-calculator-web.vercel.app/sitemap.xml

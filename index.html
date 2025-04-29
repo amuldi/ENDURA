@@ -1,6 +1,12 @@
 <!DOCTYPE html>
 <html lang="ko">
   <head>
+
+    <link rel="manifest" href="/manifest.webmanifest" />
+<link rel="apple-touch-icon" href="/icon-192.png" />
+<meta name="theme-color" content="#000000" />
+
+
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     
@@ -45,3 +51,12 @@
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/service-worker.js')
+      .then(function () {
+        console.log("Service Worker 등록 완료");
+      });
+  }
+</script>
+

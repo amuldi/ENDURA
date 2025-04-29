@@ -1,6 +1,6 @@
 {
-  "name": "1RM 계산기",
-  "short_name": "1RM",
+  "name": "REPMAX",
+  "short_name": "REPMAX",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",

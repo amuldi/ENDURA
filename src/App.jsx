@@ -1,10 +1,13 @@
+// App.jsx - Insight 탭 추가
 import React, { useState, useLayoutEffect } from "react";
 import { useSwipeable } from "react-swipeable";
 import OneRM from "./OneRM";
-import Zone2 from "./Zone2";
+import Zone from "./Zone";
+import Dashboard from "./Dashboard";
+import Insight from "./Insight";
 
 function App() {
-  const [activeTab, setActiveTab] = useState("1rm");
+  const [activeTab, setActiveTab] = useState("dashboard");
   const [darkMode, setDarkMode] = useState(false);
 
   useLayoutEffect(() => {
@@ -23,10 +26,14 @@ function App() {
 
   const handlers = useSwipeable({
     onSwipedLeft: () => {
-      if (activeTab === "1rm") setActiveTab("zone2");
+      if (activeTab === "dashboard") setActiveTab("1rm");
+      else if (activeTab === "1rm") setActiveTab("zone");
+      else if (activeTab === "zone") setActiveTab("insight");
     },
     onSwipedRight: () => {
-      if (activeTab === "zone2") setActiveTab("1rm");
+      if (activeTab === "insight") setActiveTab("zone");
+      else if (activeTab === "zone") setActiveTab("1rm");
+      else if (activeTab === "1rm") setActiveTab("dashboard");
     },
     preventDefaultTouchmoveEvent: true,
     trackMouse: true,
@@ -40,10 +47,20 @@ function App() {
       } px-4 py-6`}
     >
       <div className="max-w-3xl mx-auto">
-        <div className="flex justify-center gap-4 mb-6">
+        <div className="flex justify-center gap-4 mb-6 flex-wrap">
+          <button
+            onClick={() => setActiveTab("dashboard")}
+            className={`px-6 py-2 rounded-full border font-semibold transition duration-150 active:scale-95 ${
+              activeTab === "dashboard"
+                ? "bg-black text-white border-black"
+                : "bg-white text-black border-gray-400 hover:bg-gray-200"
+            }`}
+          >
+            대시보드
+          </button>
           <button
             onClick={() => setActiveTab("1rm")}
-            className={`px-6 py-2 rounded-full border font-semibold transition duration-300 active:scale-95 ${
+            className={`px-6 py-2 rounded-full border font-semibold transition duration-150 active:scale-95 ${
               activeTab === "1rm"
                 ? "bg-black text-white border-black"
                 : "bg-white text-black border-gray-400 hover:bg-gray-200"
@@ -52,18 +69,35 @@ function App() {
             1RM
           </button>
           <button
-            onClick={() => setActiveTab("zone2")}
-            className={`px-6 py-2 rounded-full border font-semibold transition duration-300 active:scale-95 ${
-              activeTab === "zone2"
+            onClick={() => setActiveTab("zone")}
+            className={`px-6 py-2 rounded-full border font-semibold transition duration-150 active:scale-95 ${
+              activeTab === "zone"
                 ? "bg-black text-white border-black"
                 : "bg-white text-black border-gray-400 hover:bg-gray-200"
             }`}
           >
-            Zone 2
+            Zone
+          </button>
+          <button
+            onClick={() => setActiveTab("insight")}
+            className={`px-6 py-2 rounded-full border font-semibold transition duration-150 active:scale-95 ${
+              activeTab === "insight"
+                ? "bg-black text-white border-black"
+                : "bg-white text-black border-gray-400 hover:bg-gray-200"
+            }`}
+          >
+            분석
           </button>
         </div>
-
-        {activeTab === "1rm" ? <OneRM /> : <Zone2 />}
+        {activeTab === "dashboard" ? (
+          <Dashboard />
+        ) : activeTab === "1rm" ? (
+          <OneRM />
+        ) : activeTab === "zone" ? (
+          <Zone />
+        ) : (
+          <Insight />
+        )}
       </div>
     </div>
   );

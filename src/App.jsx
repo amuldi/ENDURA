@@ -1,4 +1,4 @@
-// App.jsx - 하단 탭 네비 + 다크모드 자동 감지 포함 전체 코드
+// App.jsx - 최종본: 다크모드 자동 감지 + 하단 탭 네비게이션 + 모바일 최적화
 import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from "react-router-dom";
 import OneRM from "./OneRM";
@@ -11,7 +11,7 @@ function Navigation() {
   const isActive = (path) => location.pathname === path;
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-[#111] border-t shadow-md flex justify-around items-center h-14 text-sm sm:text-base">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-[#111] border-t shadow-md flex justify-around items-center h-14 text-xs sm:text-sm">
       <Link to="/" className={`${isActive("/") ? "text-black dark:text-white font-bold" : "text-gray-500 dark:text-gray-400"}`}>대시보드</Link>
       <Link to="/onerm" className={`${isActive("/onerm") ? "text-black dark:text-white font-bold" : "text-gray-500 dark:text-gray-400"}`}>1RM</Link>
       <Link to="/zone" className={`${isActive("/zone") ? "text-black dark:text-white font-bold" : "text-gray-500 dark:text-gray-400"}`}>Zone</Link>
@@ -24,18 +24,20 @@ function App() {
   const [isDarkMode, setIsDarkMode] = useState(false);
 
   useEffect(() => {
-    const matchDark = window.matchMedia("(prefers-color-scheme: dark)");
-    const updateTheme = () => setIsDarkMode(matchDark.matches);
-    updateTheme();
-    matchDark.addEventListener("change", updateTheme);
-    return () => matchDark.removeEventListener("change", updateTheme);
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    setIsDarkMode(mediaQuery.matches);
+
+    const handleChange = (e) => setIsDarkMode(e.matches);
+    mediaQuery.addEventListener("change", handleChange);
+    return () => mediaQuery.removeEventListener("change", handleChange);
   }, []);
 
   useEffect(() => {
+    const root = document.documentElement;
     if (isDarkMode) {
-      document.documentElement.classList.add("dark");
+      root.classList.add("dark");
     } else {
-      document.documentElement.classList.remove("dark");
+      root.classList.remove("dark");
     }
   }, [isDarkMode]);
 

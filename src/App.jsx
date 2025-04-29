@@ -1,105 +1,56 @@
-// App.jsx - Insight 탭 추가
-import React, { useState, useLayoutEffect } from "react";
-import { useSwipeable } from "react-swipeable";
+// App.jsx - 하단 탭 네비 + 다크모드 자동 감지 포함 전체 코드
+import React, { useEffect, useState } from "react";
+import { BrowserRouter as Router, Routes, Route, Link, useLocation } from "react-router-dom";
 import OneRM from "./OneRM";
 import Zone from "./Zone";
 import Dashboard from "./Dashboard";
 import Insight from "./Insight";
 
-function App() {
-  const [activeTab, setActiveTab] = useState("dashboard");
-  const [darkMode, setDarkMode] = useState(false);
-
-  useLayoutEffect(() => {
-    if (typeof window !== "undefined") {
-      const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      setDarkMode(isDark);
-
-      const listener = (e) => setDarkMode(e.matches);
-      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', listener);
-
-      return () => {
-        window.matchMedia('(prefers-color-scheme: dark)').removeEventListener('change', listener);
-      };
-    }
-  }, []);
-
-  const handlers = useSwipeable({
-    onSwipedLeft: () => {
-      if (activeTab === "dashboard") setActiveTab("1rm");
-      else if (activeTab === "1rm") setActiveTab("zone");
-      else if (activeTab === "zone") setActiveTab("insight");
-    },
-    onSwipedRight: () => {
-      if (activeTab === "insight") setActiveTab("zone");
-      else if (activeTab === "zone") setActiveTab("1rm");
-      else if (activeTab === "1rm") setActiveTab("dashboard");
-    },
-    preventDefaultTouchmoveEvent: true,
-    trackMouse: true,
-  });
+function Navigation() {
+  const location = useLocation();
+  const isActive = (path) => location.pathname === path;
 
   return (
-    <div
-      {...handlers}
-      className={`min-h-screen transition-colors duration-300 ${
-        darkMode ? "bg-[#121212] text-white" : "bg-[#FAFAFA] text-black"
-      } px-4 py-6`}
-    >
-      <div className="max-w-3xl mx-auto">
-        <div className="flex justify-center gap-4 mb-6 flex-wrap">
-          <button
-            onClick={() => setActiveTab("dashboard")}
-            className={`px-6 py-2 rounded-full border font-semibold transition duration-150 active:scale-95 ${
-              activeTab === "dashboard"
-                ? "bg-black text-white border-black"
-                : "bg-white text-black border-gray-400 hover:bg-gray-200"
-            }`}
-          >
-            대시보드
-          </button>
-          <button
-            onClick={() => setActiveTab("1rm")}
-            className={`px-6 py-2 rounded-full border font-semibold transition duration-150 active:scale-95 ${
-              activeTab === "1rm"
-                ? "bg-black text-white border-black"
-                : "bg-white text-black border-gray-400 hover:bg-gray-200"
-            }`}
-          >
-            1RM
-          </button>
-          <button
-            onClick={() => setActiveTab("zone")}
-            className={`px-6 py-2 rounded-full border font-semibold transition duration-150 active:scale-95 ${
-              activeTab === "zone"
-                ? "bg-black text-white border-black"
-                : "bg-white text-black border-gray-400 hover:bg-gray-200"
-            }`}
-          >
-            Zone
-          </button>
-          <button
-            onClick={() => setActiveTab("insight")}
-            className={`px-6 py-2 rounded-full border font-semibold transition duration-150 active:scale-95 ${
-              activeTab === "insight"
-                ? "bg-black text-white border-black"
-                : "bg-white text-black border-gray-400 hover:bg-gray-200"
-            }`}
-          >
-            분석
-          </button>
-        </div>
-        {activeTab === "dashboard" ? (
-          <Dashboard />
-        ) : activeTab === "1rm" ? (
-          <OneRM />
-        ) : activeTab === "zone" ? (
-          <Zone />
-        ) : (
-          <Insight />
-        )}
+    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-[#111] border-t shadow-md flex justify-around items-center h-14 text-sm sm:text-base">
+      <Link to="/" className={`${isActive("/") ? "text-black dark:text-white font-bold" : "text-gray-500 dark:text-gray-400"}`}>대시보드</Link>
+      <Link to="/onerm" className={`${isActive("/onerm") ? "text-black dark:text-white font-bold" : "text-gray-500 dark:text-gray-400"}`}>1RM</Link>
+      <Link to="/zone" className={`${isActive("/zone") ? "text-black dark:text-white font-bold" : "text-gray-500 dark:text-gray-400"}`}>Zone</Link>
+      <Link to="/insight" className={`${isActive("/insight") ? "text-black dark:text-white font-bold" : "text-gray-500 dark:text-gray-400"}`}>분석</Link>
+    </nav>
+  );
+}
+
+function App() {
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  useEffect(() => {
+    const matchDark = window.matchMedia("(prefers-color-scheme: dark)");
+    const updateTheme = () => setIsDarkMode(matchDark.matches);
+    updateTheme();
+    matchDark.addEventListener("change", updateTheme);
+    return () => matchDark.removeEventListener("change", updateTheme);
+  }, []);
+
+  useEffect(() => {
+    if (isDarkMode) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }, [isDarkMode]);
+
+  return (
+    <Router>
+      <div className="pb-16 min-h-screen bg-white dark:bg-[#111] text-black dark:text-white max-w-md mx-auto">
+        <Routes>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/onerm" element={<OneRM />} />
+          <Route path="/zone" element={<Zone />} />
+          <Route path="/insight" element={<Insight />} />
+        </Routes>
+        <Navigation />
       </div>
-    </div>
+    </Router>
   );
 }
 

@@ -1,22 +1,10 @@
-// OneRM.jsx - 목표 1RM 저장/삭제 및 전체 기능 포함
+// OneRM.jsx - 드롭다운 아이콘 개선 + 1RM 달성 축하 메시지 복구
 import React, { useState, useEffect } from "react";
-import { Line } from "react-chartjs-2";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-} from "chart.js";
-import annotationPlugin from "chartjs-plugin-annotation";
-
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, annotationPlugin);
 
 function OneRM() {
   const [exercise, setExercise] = useState("");
+  const [expanded, setExpanded] = useState(null);
+  const [isSelectOpen, setIsSelectOpen] = useState(false);
   const [weight, setWeight] = useState("");
   const [reps, setReps] = useState("");
   const [result, setResult] = useState(null);
@@ -24,9 +12,7 @@ function OneRM() {
   const [goals, setGoals] = useState({});
   const [currentGoal, setCurrentGoal] = useState("");
   const [unit, setUnit] = useState("kg");
-  const [filter, setFilter] = useState("all");
   const [isAchieved, setIsAchieved] = useState(false);
-  const [maxRecords, setMaxRecords] = useState({});
 
   const exerciseMap = {
     "벤치 프레스": "Bench Press",
@@ -39,252 +25,157 @@ function OneRM() {
   useEffect(() => {
     const savedHistory = localStorage.getItem("rmHistory");
     const savedGoals = localStorage.getItem("rmGoals");
-    if (savedHistory) {
-      const parsed = JSON.parse(savedHistory);
-      setHistory(parsed);
-      updateMaxRecords(parsed);
-    }
-    if (savedGoals) {
-      const parsedGoals = JSON.parse(savedGoals);
-      setGoals(parsedGoals);
-    }
+    if (savedHistory) setHistory(JSON.parse(savedHistory));
+    if (savedGoals) setGoals(JSON.parse(savedGoals));
   }, []);
 
-  useEffect(() => {
-    if (exercise && goals[exercise]) {
-      setCurrentGoal(goals[exercise]);
-    } else {
-      setCurrentGoal("");
-    }
-  }, [exercise, goals]);
-
-  const convert = (value, toUnit) =>
-    toUnit === "lb" ? value * 2.20462 : value / 2.20462;
-
-  const updateMaxRecords = (records) => {
-    const grouped = {};
-    records.forEach((r) => {
-      if (!grouped[r.exercise] || r.rm > grouped[r.exercise]) {
-        grouped[r.exercise] = r.rm;
-      }
-    });
-    setMaxRecords(grouped);
-  };
-
   const handleCalculate = () => {
-    if (!exercise || !weight || !reps) {
-      alert("운동, 중량, 반복 수를 입력하세요.");
-      return;
-    }
+    if (!exercise || !weight || !reps) return;
     const w = parseFloat(weight);
     const r = parseInt(reps);
-    const estimated1RM = w * (1 + r / 30);
-    const finalResult = unit === "kg" ? estimated1RM : convert(estimated1RM, "lb");
-
-    setResult(parseFloat(finalResult.toFixed(1)));
-
+    const estimated = w * (1 + r / 30);
+    const final = unit === "kg" ? estimated : estimated * 2.20462;
     const date = new Date().toISOString().split("T")[0];
-    const newRecord = {
-      exercise,
-      weight: w,
-      reps: r,
-      rm: parseFloat(finalResult.toFixed(1)),
-      date,
-      unit,
-    };
-    const updatedHistory = [newRecord, ...history];
-    setHistory(updatedHistory);
-    localStorage.setItem("rmHistory", JSON.stringify(updatedHistory));
-    updateMaxRecords(updatedHistory);
-
-    const goalValue = goals[exercise];
-    if (goalValue && finalResult >= goalValue) {
+    const newEntry = { exercise, weight: w, reps: r, rm: parseFloat(final.toFixed(1)), date, unit };
+    const updated = [newEntry, ...history];
+    setResult(final.toFixed(1));
+    setHistory(updated);
+    localStorage.setItem("rmHistory", JSON.stringify(updated));
+    if (goals[exercise] && final >= goals[exercise]) {
       setIsAchieved(true);
-      setTimeout(() => setIsAchieved(false), 1000);
-    } else {
-      setIsAchieved(false);
+      setTimeout(() => setIsAchieved(false), 3000);
     }
   };
 
   const handleGoalSave = () => {
-    if (!exercise || !currentGoal) {
-      alert("운동과 목표 1RM을 입력하세요.");
-      return;
-    }
-    const goalValue = parseFloat(currentGoal);
-    const newGoals = { ...goals, [exercise]: goalValue };
-    setGoals(newGoals);
-    localStorage.setItem("rmGoals", JSON.stringify(newGoals));
-    alert("목표 1RM 저장 완료");
+    if (!exercise || !currentGoal) return;
+    const g = { ...goals, [exercise]: parseFloat(currentGoal) };
+    setGoals(g);
+    localStorage.setItem("rmGoals", JSON.stringify(g));
   };
 
   const handleDeleteGoal = () => {
-    if (!exercise) return;
-    const updated = { ...goals };
-    delete updated[exercise];
-    setGoals(updated);
-    localStorage.setItem("rmGoals", JSON.stringify(updated));
+    const g = { ...goals };
+    delete g[exercise];
+    setGoals(g);
+    localStorage.setItem("rmGoals", JSON.stringify(g));
     setCurrentGoal("");
   };
 
-  const now = new Date();
-  const filtered = history.filter((item) => {
-    const itemDate = new Date(item.date);
-    if (filter === "week") return now - itemDate <= 7 * 86400000;
-    if (filter === "month") return now - itemDate <= 30 * 86400000;
-    return true;
-  });
-
-  const chartData = {
-    labels: filtered.map((item) => item.date).reverse(),
-    datasets: [
-      {
-        label: "1RM (kg)",
-        data: filtered.map((item) => item.rm).reverse(),
-        borderColor: "#000",
-        fill: false,
-        tension: 0.3,
-      },
-    ],
-  };
-
-  const chartOptions = {
-    responsive: true,
-    scales: { y: { beginAtZero: true } },
-    plugins: {
-      annotation: {
-        annotations: goals[exercise]
-          ? {
-              goalLine: {
-                type: "line",
-                yMin: goals[exercise],
-                yMax: goals[exercise],
-                borderColor: "#f43f5e",
-                borderWidth: 2,
-                borderDash: [6, 6],
-                label: {
-                  content: "목표 1RM",
-                  enabled: true,
-                  position: "start",
-                  backgroundColor: "transparent",
-                  color: "#f43f5e",
-                },
-              },
-            }
-          : {},
-      },
-    },
-  };
+  const filtered = history.filter(item => item.exercise);
 
   return (
-    <div className="px-6 py-8 space-y-6 bg-white text-black min-h-screen">
-      <h1 className="text-4xl font-bold text-center">1RM 계산기</h1>
+    <div className="max-w-3xl mx-auto px-4 sm:px-6 py-10 space-y-10 bg-[#f9f9f9] dark:bg-[#111] text-[#111] dark:text-white min-h-screen">
+      <h1 className="text-3xl sm:text-4xl font-bold text-center">1RM 계산기</h1>
 
-      <select
-        value={exercise}
-        onChange={(e) => setExercise(e.target.value)}
-        className="w-full p-3 border border-gray-300 rounded-lg"
-      >
-        <option value="">운동 종목 선택</option>
-        {Object.keys(exerciseMap).map((key) => (
-          <option key={key} value={key}>
-            {key}
-          </option>
-        ))}
-      </select>
-
-      <div className="flex gap-4">
-        <input
-          type="number"
-          placeholder={`중량 (${unit})`}
-          value={weight}
-          onChange={(e) => setWeight(e.target.value)}
-          className="flex-1 p-3 border border-gray-300 rounded-lg"
-        />
-        <input
-          type="number"
-          placeholder="반복 횟수"
-          value={reps}
-          onChange={(e) => setReps(e.target.value)}
-          className="flex-1 p-3 border border-gray-300 rounded-lg"
-        />
-      </div>
-
-      <button
-        onClick={handleCalculate}
-        className="w-full py-3 bg-black text-white font-bold rounded-lg hover:bg-gray-800"
-      >
-        1RM 계산
-      </button>
-
-      {result && (
-        <div className="text-center text-2xl font-bold mt-4">
-          예상 1RM: {result} {unit}
+      {isAchieved && (
+        <div className="bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-200 rounded-md p-4 text-center font-semibold animate-fade-in">
+          🎉 목표 1RM을 달성했습니다!
         </div>
       )}
 
-      <div className="bg-[#f9f9f9] border border-gray-200 rounded-xl p-6 shadow-md">
-        <h2 className="text-xl font-semibold mb-2">목표 1RM 설정</h2>
+      <div className="bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-gray-700 rounded-md p-6">
+        <h2 className="text-lg font-semibold mb-4">운동 종목 및 입력</h2>
+        <div className="relative">
+          <select
+            value={exercise}
+            onChange={(e) => setExercise(e.target.value)}
+            onClick={() => setIsSelectOpen(prev => !prev)}
+            onBlur={() => setTimeout(() => setIsSelectOpen(false), 150)}
+            className="w-full p-3 pr-10 mb-4 border border-gray-300 rounded-md bg-white dark:bg-[#1a1a1a] appearance-none"
+          >
+            <option value="">운동 종목 선택</option>
+            {Object.keys(exerciseMap).map((key) => (
+              <option key={key} value={key}>{key}</option>
+            ))}
+          </select>
+          <div className="absolute right-3 top-[16px] text-gray-500 pointer-events-none">
+            {isSelectOpen ? "▴" : "▾"}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+          <input
+            type="number"
+            placeholder="중량"
+            value={weight}
+            onChange={(e) => setWeight(e.target.value)}
+            className="p-3 border rounded-md bg-white dark:bg-[#1a1a1a]"
+          />
+          <input
+            type="number"
+            placeholder="반복"
+            value={reps}
+            onChange={(e) => setReps(e.target.value)}
+            className="p-3 border rounded-md bg-white dark:bg-[#1a1a1a]"
+          />
+        </div>
+        <button
+          onClick={handleCalculate}
+          className="w-full py-3 bg-[#111] text-white rounded-md hover:opacity-90"
+        >
+          1RM 계산
+        </button>
+      </div>
+
+      {result && (
+        <div className="text-center text-xl font-semibold">예상 1RM: {result} {unit}</div>
+      )}
+
+      <div className="bg-white dark:bg-[#1a1a1a] border p-6 rounded-md">
+        <h2 className="text-lg font-semibold mb-2">목표 1RM</h2>
         <input
           type="number"
-          placeholder={`목표 1RM (${unit})`}
+          placeholder="목표 1RM"
           value={currentGoal}
           onChange={(e) => setCurrentGoal(e.target.value)}
-          className="w-full p-3 border border-gray-300 rounded-lg"
+          className="w-full p-3 border rounded-md bg-white dark:bg-[#1a1a1a]"
         />
-        <div className="flex gap-2 mt-3">
-          <button
-            onClick={handleGoalSave}
-            className="flex-1 py-3 bg-black text-white font-bold rounded-lg hover:bg-gray-800"
-          >
-            목표 저장
-          </button>
+        <div className="flex gap-2 mt-4">
+          <button onClick={handleGoalSave} className="flex-1 py-3 bg-[#111] text-white rounded-md">목표 저장</button>
           {goals[exercise] && (
-            <button
-              onClick={handleDeleteGoal}
-              className="flex-1 py-3 border border-gray-400 text-gray-600 rounded-lg hover:bg-gray-100"
-            >
-              목표 삭제
-            </button>
+            <button onClick={handleDeleteGoal} className="flex-1 py-3 border rounded-md">목표 삭제</button>
           )}
         </div>
       </div>
 
       {filtered.length > 0 && (
-        <div className="bg-[#f9f9f9] border border-gray-200 rounded-xl p-6 shadow-md">
-          <h2 className="text-xl font-semibold mb-4">최근 기록</h2>
-          <ul className="space-y-2 text-sm max-h-64 overflow-y-auto">
-            {filtered.map((item, idx) => (
-              <li
-                key={idx}
-                className="flex justify-between items-center border border-gray-300 p-3 rounded-lg"
-              >
-                <span>
-                  {item.date} | {item.exercise} | {item.weight} {item.unit} ×{" "}
-                  {item.reps} = {item.rm} {item.unit}
-                </span>
+        <div className="bg-white dark:bg-[#1a1a1a] border p-6 rounded-md">
+          <h2 className="text-lg font-semibold mb-4">운동별 최근 기록</h2>
+          {Object.keys(exerciseMap).map((exKey) => {
+            const group = filtered.filter((item) => item.exercise === exKey);
+            if (group.length === 0) return null;
+            const isOpen = expanded === exKey;
+            return (
+              <div key={exKey} className="mb-4">
                 <button
-                  onClick={() => {
-                    const updated = [...history];
-                    updated.splice(idx, 1);
-                    setHistory(updated);
-                    localStorage.setItem("rmHistory", JSON.stringify(updated));
-                    updateMaxRecords(updated);
-                  }}
-                  className="text-red-500 text-xs hover:underline"
+                  onClick={() => setExpanded(isOpen ? null : exKey)}
+                  className="w-full text-left py-2 px-4 border rounded-md bg-gray-100 dark:bg-[#222] hover:bg-gray-200"
                 >
-                  삭제
+                  {exKey} <span className="float-right">{isOpen ? "▴" : "▾"}</span>
                 </button>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      {filtered.length > 1 && (
-        <div className="bg-[#f9f9f9] border border-gray-200 rounded-xl p-6 shadow-md">
-          <h2 className="text-xl font-semibold mb-4">1RM 추이</h2>
-          <Line data={chartData} options={chartOptions} />
+                {isOpen && (
+                  <ul className="mt-2 space-y-2 text-sm max-h-64 overflow-y-auto">
+                    {group.map((item, idx) => (
+                      <li key={idx} className="flex justify-between border p-3 rounded-md">
+                        <span>{item.date} | {item.weight} {item.unit} × {item.reps} = {item.rm} {item.unit}</span>
+                        <button
+                          onClick={() => {
+                            const updated = history.filter((h) => !(h.date === item.date && h.exercise === item.exercise && h.rm === item.rm));
+                            setHistory(updated);
+                            localStorage.setItem("rmHistory", JSON.stringify(updated));
+                          }}
+                          className="text-red-500 text-xs"
+                        >
+                          삭제
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            );
+          })}
         </div>
       )}
     </div>

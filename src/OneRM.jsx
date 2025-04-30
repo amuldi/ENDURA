@@ -43,7 +43,7 @@ function OneRM() {
     localStorage.setItem("rmHistory", JSON.stringify(updated));
     if (goals[exercise] && final >= goals[exercise]) {
       setIsAchieved(true);
-      setTimeout(() => setIsAchieved(false), 3000);
+      setTimeout(() => setIsAchieved(false), 1500);
     }
   };
 
@@ -70,7 +70,7 @@ function OneRM() {
 
       {isAchieved && (
         <div className="bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-200 rounded-md p-4 text-center font-semibold animate-fade-in">
-          🎉 목표 1RM을 달성했습니다!
+           목표 1RM을 달성했습니다
         </div>
       )}
 

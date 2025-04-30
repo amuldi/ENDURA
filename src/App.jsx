@@ -1,4 +1,4 @@
-// App.jsx - OneRM 포함 전체 데스크탑 UX 확장
+// App.jsx - 다크모드 감지 개선 + 여백 제거
 import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from "react-router-dom";
 import OneRM from "./OneRM";
@@ -29,7 +29,6 @@ function App() {
   useEffect(() => {
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
     setIsDarkMode(mediaQuery.matches);
-
     const handleChange = (e) => setIsDarkMode(e.matches);
     mediaQuery.addEventListener("change", handleChange);
     return () => mediaQuery.removeEventListener("change", handleChange);
@@ -46,7 +45,7 @@ function App() {
 
   return (
     <Router>
-      <div className="pb-20 min-h-screen bg-[#f9f9f9] dark:bg-[#111] text-[#111] dark:text-white max-w-6xl mx-auto px-4 sm:px-6 md:px-8 transition-colors duration-300">
+      <div className="min-h-screen bg-[#f9f9f9] dark:bg-[#111] text-[#111] dark:text-white max-w-full mx-0 px-0 transition-colors duration-300">
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/onerm" element={<OneRM />} />

@@ -1,4 +1,4 @@
-// Insight.jsx - Zone 분포 그래프 색상 복원
+// Insight.jsx - 네모형 세련된 분석화면 리디자인
 import React, { useEffect, useState } from "react";
 import { Bar, Doughnut } from "react-chartjs-2";
 import {
@@ -36,7 +36,7 @@ function Insight() {
     rmHistory.forEach((item) => {
       const date = new Date(item.date);
       const week = `${date.getFullYear()}-W${Math.ceil(date.getDate() / 7)}`;
-      const key = `${item.exercise}-${week}`;
+      const key = item.exercise
       if (!grouped[key]) grouped[key] = [];
       grouped[key].push(item.rm);
     });
@@ -65,7 +65,9 @@ function Insight() {
       {
         label: "평균 1RM (kg)",
         data: rmStats.map((s) => s.avg.toFixed(1)),
-        backgroundColor: "#333",
+        backgroundColor: "#111",
+        borderRadius: 4,
+        barThickness: 28,
       },
     ],
   };
@@ -76,41 +78,39 @@ function Insight() {
       {
         label: "Zone 분포",
         data: Object.values(zoneStats),
-        backgroundColor: [
-          "#A7F3D0", // Zone 1 - 연한 초록
-          "#6EE7B7", // Zone 2 - 중간 초록
-          "#34D399", // Zone 3 - 진한 초록
-          "#10B981", // Zone 4 - 짙은 초록
-          "#059669"  // Zone 5 - 어두운 초록
-        ],
+        backgroundColor: ["#111", "#333", "#555", "#777", "#999"],
       },
     ],
   };
 
   return (
-    <div className="px-6 py-8 space-y-8 bg-white text-black min-h-screen">
-      <h1 className="text-4xl font-bold text-center"> 성과 분석</h1>
+    <div className="px-4 sm:px-6 lg:px-8 py-8 space-y-8 bg-[#f9f9f9] dark:bg-[#111] text-[#111] dark:text-white min-h-screen max-w-3xl mx-auto">
+      <h1 className="text-3xl sm:text-4xl font-bold text-center">성과 분석</h1>
 
       <div className="grid gap-8">
-        <div className="bg-[#f9f9f9] border border-gray-200 rounded-xl p-6 shadow-md">
-          <h2 className="text-xl font-semibold mb-2">운동별 주간 평균 1RM</h2>
-          <Bar data={rmChartData} options={{ responsive: true }} />
+        <div className="bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-gray-700 rounded-md p-6 shadow-sm">
+          <h2 className="text-lg sm:text-xl font-semibold mb-2">운동별 주간 평균 1RM</h2>
+          <div className="h-[220px] sm:h-[280px]">
+            <Bar data={rmChartData} options={{ responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }} />
+          </div>
         </div>
 
-        <div className="bg-[#f9f9f9] border border-gray-200 rounded-xl p-6 shadow-md">
-          <h2 className="text-xl font-semibold mb-2">Zone 분포</h2>
-          <Doughnut data={zoneChartData} options={{ responsive: true }} />
+        <div className="bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-gray-700 rounded-md p-6 shadow-sm">
+          <h2 className="text-lg sm:text-xl font-semibold mb-2">Zone 분포</h2>
+          <div className="h-[220px] sm:h-[260px]">
+            <Doughnut data={zoneChartData} options={{ responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }} />
+          </div>
         </div>
 
-        <div className="bg-[#f9f9f9] border border-gray-200 rounded-xl p-6 shadow-md">
-          <h2 className="text-xl font-semibold mb-2">1RM 목표 도달률</h2>
-          <div className="w-full bg-gray-200 rounded-full h-4">
+        <div className="bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-gray-700 rounded-md p-6 shadow-sm">
+          <h2 className="text-lg sm:text-xl font-semibold mb-2">1RM 목표 도달률</h2>
+          <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-md h-4 sm:h-5">
             <div
-              className="bg-black h-4 rounded-full"
+              className="bg-[#111] dark:bg-white h-4 sm:h-5 rounded-md transition-all"
               style={{ width: `${goalRate}%` }}
             ></div>
           </div>
-          <p className="text-center text-sm mt-1 text-gray-700">{goalRate}% 도달</p>
+          <p className="text-center text-sm sm:text-base mt-2 text-gray-700 dark:text-gray-300">{goalRate}% </p>
         </div>
       </div>
     </div>

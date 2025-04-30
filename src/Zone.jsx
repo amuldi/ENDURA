@@ -1,4 +1,4 @@
-// Zone.jsx - 무채색 기반 고급 스타일 UI 리디자인
+// Zone.jsx - 나이 입력 유지 기능 추가
 import React, { useState, useEffect } from "react";
 import { Line } from "react-chartjs-2";
 import {
@@ -24,6 +24,9 @@ function Zone() {
   const [successRate, setSuccessRate] = useState(null);
 
   useEffect(() => {
+    const savedAge = localStorage.getItem("userAge");
+    if (savedAge) setAge(savedAge);
+
     const saved = localStorage.getItem("zoneRecords");
     if (saved) {
       const parsed = JSON.parse(saved);
@@ -32,6 +35,11 @@ function Zone() {
       setSuccessRate(parsed.length ? Math.round((successCount / parsed.length) * 100) : null);
     }
   }, []);
+
+  const handleAgeChange = (e) => {
+    setAge(e.target.value);
+    localStorage.setItem("userAge", e.target.value);
+  };
 
   const calculateZone = () => {
     if (!age || !heartRate) {
@@ -102,7 +110,7 @@ function Zone() {
         label: "심박수 (bpm)",
         data: filteredRecords.map(r => r.heartRate).reverse(),
         borderColor: "#333",
-        backgroundColor: "#ddd",
+        backgroundColor: "#ccc",
         tension: 0.3,
       },
     ],
@@ -110,58 +118,50 @@ function Zone() {
 
   const chartOptions = {
     responsive: true,
+    maintainAspectRatio: false,
     scales: { y: { beginAtZero: true } },
   };
 
   return (
-    <div className="px-6 py-8 space-y-6 bg-white text-black min-h-screen">
-      <h1 className="text-4xl font-bold text-center">Zone 계산기</h1>
+    <div className="px-4 sm:px-6 lg:px-8 py-8 space-y-8 bg-[#f9f9f9] dark:bg-[#111] text-[#111] dark:text-white min-h-screen max-w-3xl mx-auto">
+      <h1 className="text-3xl sm:text-4xl font-bold text-center">Zone 계산기</h1>
 
       <div className="grid gap-6">
-        <div className="bg-[#f9f9f9] border border-gray-200 rounded-xl p-6 shadow-md">
+        <div className="bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-gray-700 rounded-md p-6 shadow-sm space-y-4">
           <input
             type="number"
             placeholder="나이 입력"
             value={age}
-            onChange={(e) => setAge(e.target.value)}
-            className="w-full border border-gray-300 p-3 rounded-lg"
+            onChange={handleAgeChange}
+            className="w-full border border-gray-300 p-3 rounded-md bg-white dark:bg-[#1a1a1a] text-sm"
           />
-
           <input
             type="number"
             placeholder="평균 심박수 (bpm)"
             value={heartRate}
             onChange={(e) => setHeartRate(e.target.value)}
-            className="w-full border border-gray-300 p-3 rounded-lg mt-3"
+            className="w-full border border-gray-300 p-3 rounded-md bg-white dark:bg-[#1a1a1a] text-sm"
           />
-
           <button
             onClick={calculateZone}
-            className="w-full mt-4 py-3 bg-black text-white font-bold rounded-lg hover:bg-gray-800"
+            className="w-full py-3 bg-[#111] dark:bg-white text-white dark:text-black rounded-md text-sm font-semibold hover:opacity-90 transition-all"
           >
-            Zone 판정 및 저장
+            Zone 판정 
           </button>
 
           {zone && (
-            <div className="text-center text-2xl font-bold mt-6">
-              판정 결과: <span className="text-gray-900">{zone}</span>
+            <div className="text-center text-xl font-semibold mt-6">
+              판정 결과: <span className="text-[#111] dark:text-white">{zone}</span>
             </div>
           )}
 
-          {successRate !== null && (
-            <div className="text-center text-sm text-gray-500">
-              전체 Zone 기록 중 Zone2 성공률: <strong>{successRate}%</strong>
-            </div>
-          )}
 
           {zoneRanges && (
-            <div className="mt-6 text-sm text-gray-600">
+            <div className="mt-6 text-sm text-gray-600 dark:text-gray-400">
               <p className="font-semibold mb-2">Zone별 심박수 범위 (bpm):</p>
               <ul className="list-disc pl-6 space-y-1">
                 {Object.entries(zoneRanges).map(([name, [min, max]]) => (
-                  <li key={name}>
-                    {name}: {Math.round(min)} ~ {Math.round(max)}
-                  </li>
+                  <li key={name}>{name}: {Math.round(min)} ~ {Math.round(max)}</li>
                 ))}
               </ul>
             </div>
@@ -169,33 +169,35 @@ function Zone() {
         </div>
 
         <div className="flex gap-2">
-          {['all', 'week', 'month'].map((f) => (
+          {["all", "week", "month"].map((f) => (
             <button
               key={f}
               onClick={() => setFilter(f)}
-              className={`flex-1 py-2 rounded-full border text-sm ${filter === f ? 'bg-black text-white' : 'bg-white text-black border-gray-400'}`}
+              className={`flex-1 py-2 rounded-md border text-sm font-medium ${filter === f ? "bg-[#111] text-white dark:bg-white dark:text-black" : "bg-white text-black dark:bg-[#222] dark:text-white border-gray-300"} transition-all`}
             >
-              {f === 'all' ? '전체' : f === 'week' ? '주간' : '월간'}
+              {f === "all" ? "전체" : f === "week" ? "주간" : "월간"}
             </button>
           ))}
         </div>
 
         {filteredRecords.length > 0 && (
-          <div className="bg-[#f9f9f9] border border-gray-200 rounded-xl p-6 shadow-md">
-            <h2 className="text-xl font-semibold mb-4">Zone 기록</h2>
+          <div className="bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-gray-700 rounded-md p-6 shadow-sm">
+            <h2 className="text-lg font-semibold mb-4">Zone 기록</h2>
             <ul className="space-y-2 text-sm max-h-64 overflow-y-auto">
               {filteredRecords.map((r, idx) => (
-                <li key={idx} className="border border-gray-300 p-2 rounded flex justify-between items-center">
+                <li key={idx} className="border border-gray-300 p-3 rounded-md flex justify-between items-center">
                   <span>{r.date} | {r.heartRate}bpm → {r.zone}</span>
-                  <button onClick={() => handleDelete(idx)} className="text-red-500 text-xs ml-4">삭제</button>
+                  <button onClick={() => handleDelete(idx)} className="text-red-500 text-xs ml-4 hover:underline">삭제</button>
                 </li>
               ))}
             </ul>
 
             {filteredRecords.length > 1 && (
               <div className="mt-8">
-                <h2 className="text-xl font-semibold mb-4">심박수 변화 추이</h2>
-                <Line data={chartData} options={chartOptions} />
+                <h2 className="text-lg font-semibold mb-4">심박수 변화 추이</h2>
+                <div className="h-[300px] sm:h-[400px]">
+                  <Line data={chartData} options={chartOptions} />
+                </div>
               </div>
             )}
           </div>

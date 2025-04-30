@@ -142,12 +142,16 @@ function Zone() {
             onChange={(e) => setHeartRate(e.target.value)}
             className="w-full border border-gray-300 p-3 rounded-md bg-white dark:bg-[#1a1a1a] text-sm"
           />
-          <button
-            onClick={calculateZone}
-            className="w-full py-3 bg-[#111] dark:bg-white text-white dark:text-black rounded-md text-sm font-semibold hover:opacity-90 transition-all"
-          >
-            Zone 판정 
-          </button>
+        <button
+  onClick={calculateZone}
+  className="w-full py-3 bg-[#111] dark:bg-white text-white dark:text-black 
+             rounded-md text-sm font-semibold 
+             hover:opacity-90 hover:scale-[1.01] active:scale-95 
+             transition duration-200"
+>
+  Zone 판정 
+</button>
+
 
           {zone && (
             <div className="text-center text-xl font-semibold mt-6">
@@ -169,16 +173,23 @@ function Zone() {
         </div>
 
         <div className="flex gap-2">
-          {["all", "week", "month"].map((f) => (
-            <button
-              key={f}
-              onClick={() => setFilter(f)}
-              className={`flex-1 py-2 rounded-md border text-sm font-medium ${filter === f ? "bg-[#111] text-white dark:bg-white dark:text-black" : "bg-white text-black dark:bg-[#222] dark:text-white border-gray-300"} transition-all`}
-            >
-              {f === "all" ? "전체" : f === "week" ? "주간" : "월간"}
-            </button>
-          ))}
-        </div>
+  {["all", "week", "month"].map((f) => (
+    <button
+      key={f}
+      onClick={() => setFilter(f)}
+      className={`
+        flex-1 py-2 rounded-md border text-sm font-medium
+        ${filter === f
+          ? "bg-[#111] text-white dark:bg-white dark:text-black"
+          : "bg-white text-black dark:bg-[#222] dark:text-white border-gray-300"}
+        hover:scale-[1.01] active:scale-95 transition duration-200
+      `}
+    >
+      {f === "all" ? "전체" : f === "week" ? "주간" : "월간"}
+    </button>
+  ))}
+</div>
+
 
         {filteredRecords.length > 0 && (
           <div className="bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-gray-700 rounded-md p-6 shadow-sm">
@@ -186,7 +197,7 @@ function Zone() {
             <ul className="space-y-2 text-sm max-h-64 overflow-y-auto">
               {filteredRecords.map((r, idx) => (
                 <li key={idx} className="border border-gray-300 p-3 rounded-md flex justify-between items-center">
-                  <span>{r.date} | {r.heartRate}bpm → {r.zone}</span>
+                  <span>{r.date}   {r.heartRate}bpm → {r.zone}</span>
                   <button onClick={() => handleDelete(idx)} className="text-red-500 text-xs ml-4 hover:underline">삭제</button>
                 </li>
               ))}

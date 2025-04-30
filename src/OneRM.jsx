@@ -1,10 +1,22 @@
-// OneRM.jsx - 드롭다운 아이콘 개선 + 1RM 달성 축하 메시지 복구
+// OneRM.jsx
 import React, { useState, useEffect } from "react";
+import { Line } from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
+import annotationPlugin from "chartjs-plugin-annotation";
+
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, annotationPlugin);
 
 function OneRM() {
   const [exercise, setExercise] = useState("");
-  const [expanded, setExpanded] = useState(null);
-  const [isSelectOpen, setIsSelectOpen] = useState(false);
   const [weight, setWeight] = useState("");
   const [reps, setReps] = useState("");
   const [result, setResult] = useState(null);
@@ -12,7 +24,9 @@ function OneRM() {
   const [goals, setGoals] = useState({});
   const [currentGoal, setCurrentGoal] = useState("");
   const [unit, setUnit] = useState("kg");
+  const [filter, setFilter] = useState("all");
   const [isAchieved, setIsAchieved] = useState(false);
+  const [expanded, setExpanded] = useState(null);
 
   const exerciseMap = {
     "벤치 프레스": "Bench Press",
@@ -25,44 +39,116 @@ function OneRM() {
   useEffect(() => {
     const savedHistory = localStorage.getItem("rmHistory");
     const savedGoals = localStorage.getItem("rmGoals");
+
     if (savedHistory) setHistory(JSON.parse(savedHistory));
-    if (savedGoals) setGoals(JSON.parse(savedGoals));
+    if (savedGoals) {
+      const parsedGoals = JSON.parse(savedGoals);
+      setGoals(parsedGoals);
+    }
   }, []);
 
+  useEffect(() => {
+    if (exercise && goals[exercise]) {
+      setCurrentGoal(goals[exercise]);
+    } else {
+      setCurrentGoal("");
+    }
+  }, [exercise, goals]);
+
+  const convert = (value, toUnit) =>
+    toUnit === "lb" ? value * 2.20462 : value / 2.20462;
+
   const handleCalculate = () => {
-    if (!exercise || !weight || !reps) return;
+    if (!exercise || !weight || !reps) {
+      alert("운동, 중량, 반복 수를 입력하세요.");
+      return;
+    }
+
     const w = parseFloat(weight);
     const r = parseInt(reps);
-    const estimated = w * (1 + r / 30);
-    const final = unit === "kg" ? estimated : estimated * 2.20462;
+    const estimated1RM = w * (1 + r / 30);
+    const finalResult = unit === "kg" ? estimated1RM : convert(estimated1RM, "lb");
+
+    setResult(parseFloat(finalResult.toFixed(1)));
+
     const date = new Date().toISOString().split("T")[0];
-    const newEntry = { exercise, weight: w, reps: r, rm: parseFloat(final.toFixed(1)), date, unit };
-    const updated = [newEntry, ...history];
-    setResult(final.toFixed(1));
-    setHistory(updated);
-    localStorage.setItem("rmHistory", JSON.stringify(updated));
-    if (goals[exercise] && final >= goals[exercise]) {
+    const newRecord = {
+      exercise,
+      weight: w,
+      reps: r,
+      rm: parseFloat(finalResult.toFixed(1)),
+      date,
+      unit,
+    };
+
+    const updatedHistory = [newRecord, ...history];
+    setHistory(updatedHistory);
+    localStorage.setItem("rmHistory", JSON.stringify(updatedHistory));
+
+    const goalValue = goals[exercise];
+    if (goalValue && finalResult >= goalValue) {
       setIsAchieved(true);
-      setTimeout(() => setIsAchieved(false), 1500);
+      setTimeout(() => setIsAchieved(false), 1000);
+    } else {
+      setIsAchieved(false);
     }
   };
 
   const handleGoalSave = () => {
-    if (!exercise || !currentGoal) return;
-    const g = { ...goals, [exercise]: parseFloat(currentGoal) };
-    setGoals(g);
-    localStorage.setItem("rmGoals", JSON.stringify(g));
+    if (!exercise) {
+      alert("운동 종목을 선택하세요.");
+      return;
+    }
+
+    const goalValue = parseFloat(currentGoal);
+    if (isNaN(goalValue) || goalValue <= 0) {
+      alert(" 목표 1RM 값을 입력하세요.");
+      return;
+    }
+
+    const newGoals = { ...goals, [exercise]: goalValue };
+    setGoals(newGoals);
+    localStorage.setItem("rmGoals", JSON.stringify(newGoals));
+    alert("목표 1RM 저장 완료");
   };
 
   const handleDeleteGoal = () => {
-    const g = { ...goals };
-    delete g[exercise];
-    setGoals(g);
-    localStorage.setItem("rmGoals", JSON.stringify(g));
+    if (!exercise) return;
+    const updated = { ...goals };
+    delete updated[exercise];
+    setGoals(updated);
+    localStorage.setItem("rmGoals", JSON.stringify(updated));
     setCurrentGoal("");
   };
 
-  const filtered = history.filter(item => item.exercise);
+  const now = new Date();
+  const filtered = history.filter((item) => {
+    const itemDate = new Date(item.date);
+    if (filter === "week") return now - itemDate <= 7 * 86400000;
+    if (filter === "month") return now - itemDate <= 30 * 86400000;
+    return true;
+  });
+
+  const chartData = {
+    labels: filtered.map((item) => item.date).reverse(),
+    datasets: [
+      {
+        label: "1RM (kg)",
+        data: filtered.map((item) => item.rm).reverse(),
+        borderColor: "#111",
+        backgroundColor: "#ddd",
+        tension: 0.3,
+      },
+    ],
+  };
+
+  const chartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      y: { beginAtZero: true },
+    },
+  };
 
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-10 space-y-10 bg-[#f9f9f9] dark:bg-[#111] text-[#111] dark:text-white min-h-screen">
@@ -70,94 +156,110 @@ function OneRM() {
 
       {isAchieved && (
         <div className="bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-200 rounded-md p-4 text-center font-semibold animate-fade-in">
-           목표 1RM을 달성했습니다
+          목표 1RM을 달성했습니다
         </div>
       )}
 
-      <div className="bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-gray-700 rounded-md p-6">
+      <div className="bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-gray-700 rounded-md p-6 shadow-sm hover:shadow-md transition">
         <h2 className="text-lg font-semibold mb-4">운동 종목 및 입력</h2>
-        <div className="relative">
-          <select
-            value={exercise}
-            onChange={(e) => setExercise(e.target.value)}
-            onClick={() => setIsSelectOpen(prev => !prev)}
-            onBlur={() => setTimeout(() => setIsSelectOpen(false), 150)}
-            className="w-full p-3 pr-10 mb-4 border border-gray-300 rounded-md bg-white dark:bg-[#1a1a1a] appearance-none"
-          >
-            <option value="">운동 종목 선택</option>
-            {Object.keys(exerciseMap).map((key) => (
-              <option key={key} value={key}>{key}</option>
-            ))}
-          </select>
-          <div className="absolute right-3 top-[16px] text-gray-500 pointer-events-none">
-            {isSelectOpen ? "▴" : "▾"}
-          </div>
-        </div>
+
+        <select
+          value={exercise}
+          onChange={(e) => setExercise(e.target.value)}
+          className="w-full p-3 mb-4 border border-gray-300 rounded-md bg-white dark:bg-[#1a1a1a] text-sm sm:text-base transition focus:outline-none focus:ring-2 focus:ring-[#111] dark:focus:ring-white"
+        >
+          <option value="">운동 종목 선택</option>
+          {Object.keys(exerciseMap).map((key) => (
+            <option key={key} value={key}>{key}</option>
+          ))}
+        </select>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
           <input
             type="number"
-            placeholder="중량"
+            placeholder={`중량 (${unit})`}
             value={weight}
             onChange={(e) => setWeight(e.target.value)}
-            className="p-3 border rounded-md bg-white dark:bg-[#1a1a1a]"
+            className="w-full p-3 border border-gray-300 rounded-md bg-white dark:bg-[#1a1a1a] text-sm sm:text-base transition focus:outline-none focus:ring-2 focus:ring-[#111] dark:focus:ring-white"
           />
           <input
             type="number"
-            placeholder="반복"
+            placeholder="반복 횟수"
             value={reps}
             onChange={(e) => setReps(e.target.value)}
-            className="p-3 border rounded-md bg-white dark:bg-[#1a1a1a]"
+            className="w-full p-3 border border-gray-300 rounded-md bg-white dark:bg-[#1a1a1a] text-sm sm:text-base transition focus:outline-none focus:ring-2 focus:ring-[#111] dark:focus:ring-white"
           />
         </div>
+
         <button
           onClick={handleCalculate}
-          className="w-full py-3 bg-[#111] text-white rounded-md hover:opacity-90"
+          className="w-full py-3 bg-[#111] dark:bg-white text-white dark:text-black rounded-md text-sm sm:text-base font-semibold hover:opacity-90 hover:scale-[1.01] active:scale-95 transition duration-200"
         >
           1RM 계산
         </button>
       </div>
 
-      {result && (
-        <div className="text-center text-xl font-semibold">예상 1RM: {result} {unit}</div>
+      {result !== null && (
+        <div className="text-center text-2xl sm:text-3xl font-bold mt-2 transition-opacity animate-fade-in">
+          예상 1RM: {result} {unit}
+        </div>
       )}
 
-      <div className="bg-white dark:bg-[#1a1a1a] border p-6 rounded-md">
-        <h2 className="text-lg font-semibold mb-2">목표 1RM</h2>
+      <div className="bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-gray-700 rounded-md p-6 shadow-sm hover:shadow-md transition">
+        <h2 className="text-lg font-semibold mb-2">목표 1RM 설정</h2>
         <input
           type="number"
-          placeholder="목표 1RM"
+          placeholder={`목표 1RM (${unit})`}
           value={currentGoal}
           onChange={(e) => setCurrentGoal(e.target.value)}
-          className="w-full p-3 border rounded-md bg-white dark:bg-[#1a1a1a]"
+          className="w-full p-3 border border-gray-300 rounded-md bg-white dark:bg-[#1a1a1a] text-sm transition focus:outline-none focus:ring-2 focus:ring-[#111] dark:focus:ring-white"
         />
         <div className="flex gap-2 mt-4">
-          <button onClick={handleGoalSave} className="flex-1 py-3 bg-[#111] text-white rounded-md">목표 저장</button>
+          <button
+            onClick={handleGoalSave}
+            className="flex-1 py-3 bg-[#111] dark:bg-white text-white dark:text-black rounded-md text-sm font-medium hover:opacity-90 hover:scale-[1.01] active:scale-95 transition duration-200"
+          >
+            목표 저장
+          </button>
           {goals[exercise] && (
-            <button onClick={handleDeleteGoal} className="flex-1 py-3 border rounded-md">목표 삭제</button>
+            <button
+              onClick={handleDeleteGoal}
+              className="flex-1 py-3 border border-gray-400 text-gray-600 dark:text-gray-300 rounded-md text-sm font-medium hover:bg-gray-100 dark:hover:bg-[#222] hover:scale-[1.01] active:scale-95 transition duration-200"
+            >
+              목표 삭제
+            </button>
           )}
         </div>
       </div>
 
       {filtered.length > 0 && (
-        <div className="bg-white dark:bg-[#1a1a1a] border p-6 rounded-md">
+        <div className="bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-gray-700 rounded-md p-6 shadow-sm">
           <h2 className="text-lg font-semibold mb-4">운동별 최근 기록</h2>
           {Object.keys(exerciseMap).map((exKey) => {
             const group = filtered.filter((item) => item.exercise === exKey);
+            
             if (group.length === 0) return null;
+
             const isOpen = expanded === exKey;
+
             return (
               <div key={exKey} className="mb-4">
-                <button
-                  onClick={() => setExpanded(isOpen ? null : exKey)}
-                  className="w-full text-left py-2 px-4 border rounded-md bg-gray-100 dark:bg-[#222] hover:bg-gray-200"
-                >
-                  {exKey} <span className="float-right">{isOpen ? "▴" : "▾"}</span>
-                </button>
+          <button
+  onClick={() => setExpanded(isOpen ? null : exKey)}
+  className="w-full text-left py-2 px-4 border border-gray-300 dark:border-gray-600 
+             rounded-md bg-gray-100 dark:bg-[#222] text-sm font-semibold 
+             hover:bg-gray-200 dark:hover:bg-[#333] transition 
+             flex justify-between items-center"
+>
+  <span>{exKey}</span>
+  <span className="ml-2 text-lg">{isOpen ? "▴": "▾"}</span>
+</button>
+
+
                 {isOpen && (
-                  <ul className="mt-2 space-y-2 text-sm max-h-64 overflow-y-auto">
+                  <ul className="space-y-2 text-sm mt-2 max-h-64 overflow-y-auto">
                     {group.map((item, idx) => (
-                      <li key={idx} className="flex justify-between border p-3 rounded-md">
+                      <li key={`${exKey}-${idx}`} className="flex justify-between items-center border border-gray-300 p-3 rounded-md">
                         <span>{item.date} | {item.weight} {item.unit} × {item.reps} = {item.rm} {item.unit}</span>
                         <button
                           onClick={() => {
@@ -165,7 +267,7 @@ function OneRM() {
                             setHistory(updated);
                             localStorage.setItem("rmHistory", JSON.stringify(updated));
                           }}
-                          className="text-red-500 text-xs"
+                          className="text-red-500 text-xs hover:underline"
                         >
                           삭제
                         </button>

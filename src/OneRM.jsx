@@ -1,4 +1,4 @@
-// OneRM.jsx
+// OneRM.jsx - 커스텀 드롭다운으로 운동 종목 선택 구현 (펼침/닫힘 아이콘 포함)
 import React, { useState, useEffect } from "react";
 import { Line } from "react-chartjs-2";
 import {
@@ -17,6 +17,7 @@ ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, T
 
 function OneRM() {
   const [exercise, setExercise] = useState("");
+  const [exerciseDropdownOpen, setExerciseDropdownOpen] = useState(false);
   const [weight, setWeight] = useState("");
   const [reps, setReps] = useState("");
   const [result, setResult] = useState(null);
@@ -163,16 +164,34 @@ function OneRM() {
       <div className="bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-gray-700 rounded-md p-6 shadow-sm hover:shadow-md transition">
         <h2 className="text-lg font-semibold mb-4">운동 종목 및 입력</h2>
 
-        <select
-          value={exercise}
-          onChange={(e) => setExercise(e.target.value)}
-          className="w-full p-3 mb-4 border border-gray-300 rounded-md bg-white dark:bg-[#1a1a1a] text-sm sm:text-base transition focus:outline-none focus:ring-2 focus:ring-[#111] dark:focus:ring-white"
-        >
-          <option value="">운동 종목 선택</option>
-          {Object.keys(exerciseMap).map((key) => (
-            <option key={key} value={key}>{key}</option>
-          ))}
-        </select>
+        {/* 커스텀 드롭다운 */}
+        <div className="mb-4">
+          <button
+            onClick={() => setExerciseDropdownOpen((prev) => !prev)}
+            className="w-full text-left py-3 px-4 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-[#1a1a1a] text-sm sm:text-base font-semibold flex justify-between items-center hover:bg-gray-100 dark:hover:bg-[#222] transition"
+          >
+            <span>{exercise || "운동 종목 선택"}</span>
+            <span className="text-lg">{exerciseDropdownOpen ? "▴" : "▾"}</span>
+          </button>
+
+          {exerciseDropdownOpen && (
+            <ul className="mt-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-[#1a1a1a] shadow-sm max-h-60 overflow-y-auto">
+              {Object.keys(exerciseMap).map((key) => (
+                <li
+                  key={key}
+                  onClick={() => {
+                    setExercise(key);
+                    setExerciseDropdownOpen(false);
+                  }}
+                  className={`px-4 py-2 cursor-pointer text-sm hover:bg-gray-100 dark:hover:bg-[#333] ${exercise === key ? "bg-gray-100 dark:bg-[#222] font-bold" : ""}`}
+                >
+                  {key}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
           <input
@@ -260,7 +279,7 @@ function OneRM() {
                   <ul className="space-y-2 text-sm mt-2 max-h-64 overflow-y-auto">
                     {group.map((item, idx) => (
                       <li key={`${exKey}-${idx}`} className="flex justify-between items-center border border-gray-300 p-3 rounded-md">
-                        <span>{item.date} | {item.weight} {item.unit} × {item.reps} = {item.rm} {item.unit}</span>
+                        <span>{item.date}  {item.weight} {item.unit} × {item.reps} = {item.rm} {item.unit}</span>
                         <button
                           onClick={() => {
                             const updated = history.filter((h) => !(h.date === item.date && h.exercise === item.exercise && h.rm === item.rm));

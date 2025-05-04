@@ -162,7 +162,7 @@ function OneRM() {
       )}
 
       <div className="bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-gray-700 rounded-md p-6 shadow-sm hover:shadow-md transition">
-        <h2 className="text-lg font-semibold mb-4">운동 종목 및 입력</h2>
+        <h2 className="text-lg font-semibold mb-4">1RM 계산</h2>
 
         {/* 커스텀 드롭다운 */}
         <div className="mb-4">
@@ -170,7 +170,7 @@ function OneRM() {
             onClick={() => setExerciseDropdownOpen((prev) => !prev)}
             className="w-full text-left py-3 px-4 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-[#1a1a1a] text-sm sm:text-base font-semibold flex justify-between items-center hover:bg-gray-100 dark:hover:bg-[#222] transition"
           >
-            <span>{exercise || "운동 종목 선택"}</span>
+            <span>{exercise || "운동 종목 "}</span>
             <span className="text-lg">{exerciseDropdownOpen ? "▴" : "▾"}</span>
           </button>
 
@@ -225,7 +225,7 @@ function OneRM() {
       )}
 
       <div className="bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-gray-700 rounded-md p-6 shadow-sm hover:shadow-md transition">
-        <h2 className="text-lg font-semibold mb-2">목표 1RM 설정</h2>
+        <h2 className="text-lg font-semibold mb-2">목표 1RM </h2>
         <input
           type="number"
           placeholder={`목표 1RM (${unit})`}
@@ -238,14 +238,14 @@ function OneRM() {
             onClick={handleGoalSave}
             className="flex-1 py-3 bg-[#111] dark:bg-white text-white dark:text-black rounded-md text-sm font-medium hover:opacity-90 hover:scale-[1.01] active:scale-95 transition duration-200"
           >
-            목표 저장
+             저장
           </button>
           {goals[exercise] && (
             <button
               onClick={handleDeleteGoal}
               className="flex-1 py-3 border border-gray-400 text-gray-600 dark:text-gray-300 rounded-md text-sm font-medium hover:bg-gray-100 dark:hover:bg-[#222] hover:scale-[1.01] active:scale-95 transition duration-200"
             >
-              목표 삭제
+               삭제
             </button>
           )}
         </div>
@@ -253,7 +253,7 @@ function OneRM() {
 
       {filtered.length > 0 && (
         <div className="bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-gray-700 rounded-md p-6 shadow-sm">
-          <h2 className="text-lg font-semibold mb-4">운동별 최근 기록</h2>
+          <h2 className="text-lg font-semibold mb-4"> 최근 기록</h2>
           {Object.keys(exerciseMap).map((exKey) => {
             const group = filtered.filter((item) => item.exercise === exKey);
             

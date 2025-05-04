@@ -1,4 +1,4 @@
-// App.jsx - keen-slider로 모바일 페이지 슬라이드 교체 + 다크모드 감지
+// App.jsx - keen-slider + React Router + SplashScreen 적용
 import React, { useEffect, useState } from "react";
 import "keen-slider/keen-slider.min.css";
 import { useKeenSlider } from "keen-slider/react";
@@ -6,8 +6,10 @@ import OneRM from "./OneRM";
 import Zone from "./Zone";
 import Dashboard from "./Dashboard";
 import Insight from "./Insight";
+import SplashScreen from "./SplashScreen";
+import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
 
-function App() {
+function SliderApp() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
 
@@ -64,6 +66,28 @@ function App() {
         ))}
       </nav>
     </div>
+  );
+}
+
+function App() {
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 1500);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (loading) return <SplashScreen />;
+
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<SliderApp />} />
+        <Route path="/one-rm" element={<OneRM />} />
+        <Route path="/zone" element={<Zone />} />
+        <Route path="/insight" element={<Insight />} />
+      </Routes>
+    </Router>
   );
 }
 

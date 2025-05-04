@@ -1,7 +1,10 @@
-// Dashboard.jsx - 네모형 + 세련된 반응형 리디자인
+// Dashboard.jsx - 네모형 + 세련된 반응형 리디자인 + 카드 클릭 시 상세 페이지 이동
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function Dashboard() {
+  const navigate = useNavigate();
+
   const [today, setToday] = useState("");
   const [lastOneRM, setLastOneRM] = useState(null);
   const [lastZone, setLastZone] = useState(null);
@@ -33,11 +36,13 @@ function Dashboard() {
 
       <div className="grid gap-6">
         <div className="bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-gray-700 rounded-md p-6 shadow-sm text-center space-y-1">
-          <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400"></p>
           <p className="text-xl sm:text-2xl font-semibold">{today}</p>
         </div>
 
-        <div className="bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-gray-700 rounded-md p-6 shadow-sm">
+        <div
+          onClick={() => navigate("/one-rm")}
+          className="cursor-pointer bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-gray-700 rounded-md p-6 shadow-sm hover:shadow-md transition"
+        >
           <h2 className="text-lg sm:text-xl font-semibold mb-2">최근 1RM 기록</h2>
           {lastOneRM ? (
             <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300">
@@ -48,7 +53,10 @@ function Dashboard() {
           )}
         </div>
 
-        <div className="bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-gray-700 rounded-md p-6 shadow-sm">
+        <div
+          onClick={() => navigate("/zone")}
+          className="cursor-pointer bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-gray-700 rounded-md p-6 shadow-sm hover:shadow-md transition"
+        >
           <h2 className="text-lg sm:text-xl font-semibold mb-2">최근 Zone 기록</h2>
           {lastZone ? (
             <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300">
@@ -59,7 +67,10 @@ function Dashboard() {
           )}
         </div>
 
-        <div className="bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-gray-700 rounded-md p-6 shadow-sm">
+        <div
+          onClick={() => navigate("/insight")}
+          className="cursor-pointer bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-gray-700 rounded-md p-6 shadow-sm hover:shadow-md transition"
+        >
           <h2 className="text-lg sm:text-xl font-semibold mb-2">1RM 목표 도달률</h2>
           <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-md h-4 sm:h-5">
             <div
@@ -69,8 +80,6 @@ function Dashboard() {
           </div>
           <p className="text-center text-sm sm:text-base mt-2 text-gray-700 dark:text-gray-300">{goalRate}% </p>
         </div>
-
-        
       </div>
     </div>
   );

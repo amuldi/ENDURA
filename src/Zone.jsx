@@ -130,7 +130,7 @@ function Zone() {
         <div className="bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-gray-700 rounded-md p-6 shadow-sm space-y-4">
           <input
             type="number"
-            placeholder="나이 입력"
+            placeholder="나이(만)"
             value={age}
             onChange={handleAgeChange}
             className="w-full border border-gray-300 p-3 rounded-md bg-white dark:bg-[#1a1a1a] text-sm"

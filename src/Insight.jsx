@@ -85,24 +85,24 @@ function Insight() {
 
   return (
     <div className="px-4 sm:px-6 lg:px-8 py-8 space-y-8 bg-[#f9f9f9] dark:bg-[#111] text-[#111] dark:text-white min-h-screen max-w-3xl mx-auto">
-      <h1 className="text-3xl sm:text-4xl font-bold text-center">성과 분석</h1>
+      <h1 className="text-3xl sm:text-4xl font-bold text-center">운동 분석</h1>
 
       <div className="grid gap-8">
-        <div className="bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-gray-700 rounded-md p-6 shadow-sm">
-          <h2 className="text-lg sm:text-xl font-semibold mb-2">운동별 주간 평균 1RM</h2>
+        <div className="bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-white-700 rounded-md p-6 shadow-sm">
+          <h2 className="text-lg sm:text-xl font-semibold mb-2"> 주간 평균 1RM</h2>
           <div className="h-[220px] sm:h-[280px]">
             <Bar data={rmChartData} options={{ responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }} />
           </div>
         </div>
 
-        <div className="bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-gray-700 rounded-md p-6 shadow-sm">
+        <div className="bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-white-700 rounded-md p-6 shadow-sm">
           <h2 className="text-lg sm:text-xl font-semibold mb-2">Zone 분포</h2>
           <div className="h-[220px] sm:h-[260px]">
             <Doughnut data={zoneChartData} options={{ responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }} />
           </div>
         </div>
 
-        <div className="bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-gray-700 rounded-md p-6 shadow-sm">
+        <div className="bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-white-700 rounded-md p-6 shadow-sm">
           <h2 className="text-lg sm:text-xl font-semibold mb-2">1RM 목표 도달률</h2>
           <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-md h-4 sm:h-5">
             <div

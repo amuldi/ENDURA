@@ -1,3 +1,5 @@
 User-agent: *
 Allow: /
-Sitemap: https://1rm-calculator-web.vercel.app/sitemap.xml
+
+Sitemap: https://endura-eight.vercel.app/sitemap.xml
+

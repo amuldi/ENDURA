@@ -1,9 +1,19 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://1rm-calculator-web.vercel.app/</loc>
-    <lastmod>2025-04-19</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>1.0</priority>
+    <loc>https://endura-eight.vercel.app/</loc>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://endura-eight.vercel.app/one-rm</loc>
+    <priority>0.80</priority>
+  </url>
+  <url>
+    <loc>https://endura-eight.vercel.app/zone</loc>
+    <priority>0.80</priority>
+  </url>
+  <url>
+    <loc>https://endura-eight.vercel.app/insight</loc>
+    <priority>0.70</priority>
   </url>
 </urlset>

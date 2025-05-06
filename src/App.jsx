@@ -1,13 +1,14 @@
-// App.jsx - keen-slider + React Router + SplashScreen 적용
+// App.jsx - keen-slider + React Router + SplashScreen + BottomNav 항상 표시
 import React, { useEffect, useState } from "react";
 import "keen-slider/keen-slider.min.css";
 import { useKeenSlider } from "keen-slider/react";
-import OneRM from "./OneRM";
-import Zone from "./Zone";
-import Dashboard from "./Dashboard";
-import Insight from "./Insight";
+import OneRM from "./pages/OneRM";
+import Zone from "./pages/Zone";
+import Dashboard from "./pages/Dashboard";
+import Insight from "./pages/Insight";
 import SplashScreen from "./SplashScreen";
-import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
+import BottomNav from "./BottomNav";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 function SliderApp() {
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -46,25 +47,12 @@ function SliderApp() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#f9f9f9] dark:bg-[#111] text-[#111] dark:text-white transition-colors duration-300">
+    <div className="min-h-screen pb-20 bg-[#f9f9f9] dark:bg-[#111] text-[#111] dark:text-white transition-colors duration-300">
       <div ref={sliderRef} className="keen-slider min-h-[calc(100vh-5rem)]">
         {screens.map((s, idx) => (
           <div key={s.name} className="keen-slider__slide p-4">{s.component}</div>
         ))}
       </div>
-
-      {/* 하단 네비게이션 */}
-      <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-[#111] border-t border-gray-200 dark:border-gray-700 shadow-[0_-1px_4px_rgba(0,0,0,0.05)] flex justify-around items-center h-20 text-sm sm:text-base md:text-lg px-2">
-        {screens.map((s, idx) => (
-          <button
-            key={s.name}
-            onClick={() => instanceRef.current?.moveToIdx(idx)}
-            className={`flex-1 text-center transition-all ${currentSlide === idx ? "text-[#111] dark:text-white font-semibold" : "text-gray-500 dark:text-gray-400"}`}
-          >
-            {s.name}
-          </button>
-        ))}
-      </nav>
     </div>
   );
 }
@@ -81,12 +69,15 @@ function App() {
 
   return (
     <Router>
-      <Routes>
-        <Route path="/" element={<SliderApp />} />
-        <Route path="/one-rm" element={<OneRM />} />
-        <Route path="/zone" element={<Zone />} />
-        <Route path="/insight" element={<Insight />} />
-      </Routes>
+      <div className="min-h-screen pb-20 bg-[#f9f9f9] dark:bg-[#111] text-[#111] dark:text-white transition-colors duration-300">
+        <Routes>
+          <Route path="/" element={<SliderApp />} />
+          <Route path="/one-rm" element={<OneRM />} />
+          <Route path="/zone" element={<Zone />} />
+          <Route path="/insight" element={<Insight />} />
+        </Routes>
+        <BottomNav />
+      </div>
     </Router>
   );
 }

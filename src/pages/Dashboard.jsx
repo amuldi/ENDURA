@@ -26,9 +26,24 @@ setToday(formatted);
     const rmGoals = JSON.parse(localStorage.getItem("rmGoals")) || {};
     if (rmHistory.length > 0) {
       const total = rmHistory.length;
-      const achieved = rmHistory.filter(
-        (r) => r.exercise && rmGoals[r.exercise] && r.rm >= rmGoals[r.exercise]
-      ).length;
+// 추가: 한글 → 영어 매핑
+const exerciseMap = {
+  "벤치프레스": "Bench Press",
+  "벤치 프레스": "Bench Press",
+  "스쿼트": "Squat",
+  "바벨로우": "Barbell Row",
+  "데드리프트": "Deadlift",
+  "오버헤드프레스": "Overhead Press",
+  "오버헤드 프레스": "Overhead Press",
+};
+
+const achieved = rmHistory.filter((r) => {
+  const original = r.exercise?.trim();
+  const mapped = exerciseMap[original] || original;
+  const goal = rmGoals[mapped];
+  return goal !== undefined && r.rm >= goal;
+}).length;
+
       setGoalRate(Math.round((achieved / total) * 100));
     }
   }, []);
@@ -40,7 +55,7 @@ setToday(formatted);
       <div className="grid gap-6">
         <div className="bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-gray-700 rounded-md p-6 shadow-sm text-center space-y-1">
           <p className="text-xl sm:text-2xl font-semibold">{today}</p>
-        </div>
+        </div> 
 
         <div
           onClick={() => navigate("/one-rm")}

@@ -214,7 +214,7 @@ function OneRM() {
           onClick={handleCalculate}
           className="w-full py-3 bg-[#111] dark:bg-white text-white dark:text-black rounded-md text-sm sm:text-base font-semibold hover:opacity-90 hover:scale-[1.01] active:scale-95 transition duration-200"
         >
-           Calculation
+          1RM Calculation
         </button>
       </div>
 
@@ -292,7 +292,7 @@ function OneRM() {
                           }}
                           className="text-red-500 text-xs hover:underline"
                         >
-                          Delete
+                        Delete
                         </button>
                       </li>
                     ))}

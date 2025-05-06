@@ -25,24 +25,36 @@ function Insight() {
   const [rmStats, setRmStats] = useState([]);
   const [zoneStats, setZoneStats] = useState({});
   const [goalRate, setGoalRate] = useState(0);
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  useEffect(() => {
+    const matchDark = window.matchMedia("(prefers-color-scheme: dark)");
+    setIsDarkMode(document.documentElement.classList.contains("dark"));
+
+    const updateMode = (e) => setIsDarkMode(e.matches);
+    matchDark.addEventListener("change", updateMode);
+    return () => matchDark.removeEventListener("change", updateMode);
+  }, []);
 
   useEffect(() => {
     const rmHistory = JSON.parse(localStorage.getItem("rmHistory")) || [];
     const rmGoals = JSON.parse(localStorage.getItem("rmGoals")) || {};
     const zoneHistory = JSON.parse(localStorage.getItem("zoneRecords")) || [];
 
-    // 한글 → 영어 변환 매핑
     const exerciseMap = {
+      "벤치프레스": "Bench Press",
       "벤치 프레스": "Bench Press",
       "스쿼트": "Squat",
       "바벨로우": "Barbell Row",
       "데드리프트": "Deadlift",
       "오버헤드프레스": "Overhead Press",
+      "오버헤드 프레스": "Overhead Press",
     };
 
     const grouped = {};
     rmHistory.forEach((item) => {
-      const key = exerciseMap[item.exercise] || item.exercise;
+      const original = item.exercise?.trim();
+      const key = exerciseMap[original] || original;
       if (!grouped[key]) grouped[key] = [];
       grouped[key].push(item.rm);
     });
@@ -59,12 +71,12 @@ function Insight() {
     });
     setZoneStats(zoneCounts);
 
-    const achieved = rmHistory.filter(
-      (r) =>
-        r.exercise &&
-        rmGoals[exerciseMap[r.exercise] || r.exercise] &&
-        r.rm >= rmGoals[exerciseMap[r.exercise] || r.exercise]
-    ).length;
+    const achieved = rmHistory.filter((r) => {
+      const original = r.exercise?.trim();
+      const mapped = exerciseMap[original] || original;
+      const goal = rmGoals[mapped];
+      return goal !== undefined && r.rm >= goal;
+    }).length;
 
     const total = rmHistory.length;
     setGoalRate(total ? Math.round((achieved / total) * 100) : 0);
@@ -76,7 +88,7 @@ function Insight() {
       {
         label: "Weekly average 1RM (kg)",
         data: rmStats.map((s) => s.avg.toFixed(1)),
-        backgroundColor: "#111",
+        backgroundColor: isDarkMode ? "#ffffff" : "#111111",
         borderRadius: 4,
         barThickness: 28,
       },
@@ -89,7 +101,9 @@ function Insight() {
       {
         label: "Zone data",
         data: Object.values(zoneStats),
-        backgroundColor: ["#111", "#333", "#555", "#777", "#999"],
+        backgroundColor: isDarkMode
+          ? ["#ffffff", "#bbbbbb", "#999999", "#777777", "#555555"]
+          : ["#111111", "#333333", "#555555", "#777777", "#999999"],
       },
     ],
   };
@@ -99,7 +113,8 @@ function Insight() {
       <h1 className="text-3xl sm:text-4xl font-bold text-center">Workout Insights</h1>
 
       <div className="grid gap-8">
-        <div className="bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-white-700 rounded-md p-6 shadow-sm">
+        {/* 1RM Chart */}
+        <div className="bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-gray-700 rounded-md p-6 shadow-sm">
           <h2 className="text-lg sm:text-xl font-semibold mb-2">Weekly average 1RM</h2>
           <div className="h-[220px] sm:h-[280px]">
             <Bar
@@ -113,7 +128,8 @@ function Insight() {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-white-700 rounded-md p-6 shadow-sm">
+        {/* Zone Chart */}
+        <div className="bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-gray-700 rounded-md p-6 shadow-sm">
           <h2 className="text-lg sm:text-xl font-semibold mb-2">Zone Data</h2>
           <div className="h-[220px] sm:h-[260px]">
             <Doughnut
@@ -127,7 +143,8 @@ function Insight() {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-white-700 rounded-md p-6 shadow-sm">
+        {/* 1RM Goal Progress */}
+        <div className="bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-gray-700 rounded-md p-6 shadow-sm">
           <h2 className="text-lg sm:text-xl font-semibold mb-2">1RM Goal Progress</h2>
           <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-md h-4 sm:h-5">
             <div

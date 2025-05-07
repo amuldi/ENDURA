@@ -8,8 +8,9 @@ import Dashboard from "./pages/Dashboard";
 import Insight from "./pages/Insight";
 import SplashScreen from "./SplashScreen";
 import BottomNav from "./BottomNav";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from "react-router-dom";
 
+// SliderApp은 추후 사용 가능
 function SliderApp() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -57,29 +58,49 @@ function SliderApp() {
   );
 }
 
-function App() {
+// Splash → 자동 이동 → 라우팅 구성
+function AppRoutes() {
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 1500);
+    const timer = setTimeout(() => {
+      setLoading(false);
+      navigate("/dashboard");
+    }, 1500);
     return () => clearTimeout(timer);
   }, []);
 
-  if (loading) return <SplashScreen />;
+  if (loading) {
+    // 로딩 화면은 여백 없이 꽉 채우기
+    return <SplashScreen />;
+  }
 
+  // 실제 페이지만 하단 여백 확보
   return (
-    <div className="w-full overflow-x-hidden bg-[#f9f9f9] dark:bg-[#111] text-[#111] dark:text-white min-h-screen">
-      <Router>
-        <BottomNav />
-        <Routes>
-          <Route path="/" element={<SplashScreen />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/one-rm" element={<OneRM />} />
-          <Route path="/zone" element={<Zone />} />
-          <Route path="/insight" element={<Insight />} />
-        </Routes>
-      </Router>
+    <div className="pb-28">
+      <BottomNav />
+      <Routes>
+        <Route path="/" element={<Navigate to="/dashboard" />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/one-rm" element={<OneRM />} />
+        <Route path="/zone" element={<Zone />} />
+        <Route path="/insight" element={<Insight />} />
+        <Route path="*" element={<Navigate to="/dashboard" />} />
+      </Routes>
     </div>
+  );
+}
+
+
+function App() {
+  return (
+    <div className="w-full overflow-x-hidden min-h-screen bg-[#f9f9f9] dark:bg-[#111] text-[#111] dark:text-white pb-28">
+    <Router>
+      <AppRoutes />
+    </Router>
+  </div>
+  
   );
 }
 

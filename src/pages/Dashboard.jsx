@@ -26,7 +26,7 @@ setToday(formatted);
     const rmGoals = JSON.parse(localStorage.getItem("rmGoals")) || {};
     if (rmHistory.length > 0) {
       const total = rmHistory.length;
-// 추가: 한글 → 영어 매핑
+
 const exerciseMap = {
   "벤치프레스": "Bench Press",
   "벤치 프레스": "Bench Press",

@@ -109,25 +109,26 @@ function Insight() {
   };
 
   return (
-    <div className="px-4 sm:px-6 lg:px-8 py-8 space-y-8 bg-[#f9f9f9] dark:bg-[#111] text-[#111] dark:text-white min-h-screen max-w-3xl mx-auto">
-      <h1 className="text-3xl sm:text-4xl font-bold text-center">Workout Insights</h1>
-
-      <div className="grid gap-8">
-        {/* 1RM Chart */}
-        <div className="bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-gray-700 rounded-md p-6 shadow-sm">
-          <h2 className="text-lg sm:text-xl font-semibold mb-2">Weekly average 1RM</h2>
-          <div className="h-[220px] sm:h-[280px]">
-            <Bar
-              data={rmChartData}
-              options={{
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-              }}
-            />
-          </div>
+    <div className="px-4 sm:px-6 py-8 space-y-8 bg-[#f9f9f9] dark:bg-[#111] text-[#111] dark:text-white min-h-screen max-w-3xl mx-auto">
+    <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center">Workout Insights</h1>
+  
+    <div className="grid gap-6">
+      {/* Chart wrapper */}
+      <div className="bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-gray-700 rounded-md p-4 sm:p-6 shadow-sm">
+        <h2 className="text-base sm:text-lg font-semibold mb-2">Weekly average 1RM</h2>
+        <div className="h-[180px] sm:h-[240px] md:h-[300px]">
+          <Bar
+            data={rmChartData}
+            options={{
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: { legend: { display: false } },
+            }}
+          />
         </div>
-
+      </div>
+    
+  
         {/* Zone Chart */}
         <div className="bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-gray-700 rounded-md p-6 shadow-sm">
           <h2 className="text-lg sm:text-xl font-semibold mb-2">Zone Data</h2>

@@ -68,17 +68,18 @@ function App() {
   if (loading) return <SplashScreen />;
 
   return (
-    <Router>
-      <div className="min-h-screen pb-20 bg-[#f9f9f9] dark:bg-[#111] text-[#111] dark:text-white transition-colors duration-300">
+    <div className="w-full overflow-x-hidden bg-[#f9f9f9] dark:bg-[#111] text-[#111] dark:text-white min-h-screen">
+      <Router>
+        <BottomNav />
         <Routes>
-          <Route path="/" element={<SliderApp />} />
+          <Route path="/" element={<SplashScreen />} />
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/one-rm" element={<OneRM />} />
           <Route path="/zone" element={<Zone />} />
           <Route path="/insight" element={<Insight />} />
         </Routes>
-        <BottomNav />
-      </div>
-    </Router>
+      </Router>
+    </div>
   );
 }
 

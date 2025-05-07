@@ -6,7 +6,7 @@ function SplashScreen() {
     <div className="flex items-center justify-center h-screen bg-black">
       <img
         src="/apple-touch-icon.png"
-        alt="REPMAX Logo"
+        alt="SU'REN Logo"
         className="w-48 h-48" // 192px × 192px
       />
     </div>

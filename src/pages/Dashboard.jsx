@@ -50,7 +50,7 @@ const achieved = rmHistory.filter((r) => {
 
   return (
     <div className="px-4 sm:px-6 lg:px-8 py-8 space-y-8 bg-[#f9f9f9] dark:bg-[#111] text-[#111] dark:text-white min-h-screen max-w-3xl mx-auto">
-      <h1 className="text-3xl sm:text-4xl font-bold text-center">ENDURA</h1>
+      <h1 className="text-3xl sm:text-4xl font-bold text-center">SU’REN</h1>
 
       <div className="grid gap-6">
         <div className="bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-gray-700 rounded-md p-6 shadow-sm text-center space-y-1">

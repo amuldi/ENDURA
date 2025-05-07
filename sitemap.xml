@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://endura-eight.vercel.app/</loc>
+    <loc>https://suren-pi.vercel.app/</loc>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://endura-eight.vercel.app/one-rm</loc>
+    <loc>https://suren-pi.vercel.app/one-rm</loc>
     <priority>0.80</priority>
   </url>
   <url>
-    <loc>https://endura-eight.vercel.app/zone</loc>
+    <loc>https://suren-pi.vercel.app/zone</loc>
     <priority>0.80</priority>
   </url>
   <url>
-    <loc>https://endura-eight.vercel.app/insight</loc>
+    <loc>https://suren-pi.vercel.app/insight</loc>
     <priority>0.70</priority>
   </url>
 </urlset>

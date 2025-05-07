@@ -202,7 +202,7 @@ function Zone() {
   {r.heartRate}bpm&nbsp;&nbsp;→&nbsp;&nbsp;{r.zone}
 </span>
 
-                  <button onClick={() => handleDelete(idx)} className="text-red-500 text-xs ml-4 hover:underline">삭제</button>
+                  <button onClick={() => handleDelete(idx)} className="text-red-500 text-xs ml-4 hover:underline">Delete</button>
                 </li>
               ))}
             </ul>

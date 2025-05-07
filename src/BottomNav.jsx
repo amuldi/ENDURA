@@ -23,7 +23,7 @@ function BottomNav() {
             onClick={() => navigate(tab.path)}
             className={`flex flex-col items-center text-xs sm:text-sm transition-all ${
               isActive
-                ? "text-black-600 dark:text-blue-400 font-semibold"
+                ? "text-black-600 dark:text-white-400 font-semibold"
                 : "text-gray-500 dark:text-gray-400"
             }`}
           >

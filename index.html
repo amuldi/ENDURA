@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- 🔍 SEO & Google Verification -->
+    <meta name="google-site-verification" content="LBRQVyWON3d8pPf5eTaBbWgJdyCcyIn_kNhzrbZx78E" />
+    <meta name="description" content="Track your 1RM progress, manage zone training, and analyze your workout records with SU'REN — your smart fitness web app." />
+    <meta name="keywords" content="SU'REN, 1RM calculator, heart rate zones, zone training, fitness app, workout tracker, gym performance" />
+    <meta name="author" content="amuldi" />
+    <meta name="robots" content="index, follow" />
+
+    <!-- 🌐 Open Graph (Facebook, LinkedIn, Kakao) -->
+    <meta property="og:site_name" content="SU'REN" />
+    <meta property="og:title" content="SU'REN – Precision in Every Rep" />
+    <meta property="og:description" content="The aura of persistence and performance. Visualize your fitness journey with SU'REN." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://suren-pi.vercel.app/" />
+    <meta property="og:image" content="https://suren-pi.vercel.app/apple-touch-icon.png" />
+
+    <!-- 🐦 Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="SU'REN – Precision in Every Rep" />
+    <meta name="twitter:description" content="Track your 1RM and heart rate zones. The aura of persistence and performance." />
+    <meta name="twitter:image" content="https://suren-pi.vercel.app/apple-touch-icon.png" />
+
+    <!-- 📱 PWA Support -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="SU'REN" />
+    <meta name="theme-color" content="#121212" />
+
+    <!-- 🧠 App Icons & Manifest -->
+    <link rel="icon" href="/favicon.png?v=1" type="image/png" />
+
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" type="image/png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+
+
+    <!-- ✍️ Fonts -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;700&display=swap" rel="stylesheet" />
+
+    <!-- 📛 Title -->
+    <title>SU'REN – Precision in Every Rep</title>
+  </head>
+
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+
+    <!-- 🛡️ Service Worker -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/service-worker.js')
+          .then(() => console.log("✅ Service Worker registered"))
+          .catch(err => console.error("❌ Service Worker failed:", err));
+      }
+    </script>
+  </body>
+</html>
